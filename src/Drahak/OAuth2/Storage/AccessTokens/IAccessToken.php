@@ -39,4 +39,16 @@ interface IAccessToken
 	 */
 	public function getScope();
 
+	/**
+	 * Get is active
+	 * @return int
+	 */
+	public function getIsActive();
+
+	/**
+	 * Get username
+	 * @return string
+	 */
+	public function getUsername();
+
 }

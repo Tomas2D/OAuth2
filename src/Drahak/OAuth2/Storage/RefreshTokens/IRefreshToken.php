@@ -33,4 +33,10 @@ interface IRefreshToken
 	 */
 	public function getUserId();
 
+	/**
+	 * Is refresh token active?
+	 * @return boolean
+	 */
+	public function getIsActive();
+
 }

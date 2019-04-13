@@ -1,24 +1,27 @@
 <?php
 namespace Drahak\OAuth2\Storage\Dibi;
 
+use Dibi\Connection;
 use Drahak\OAuth2\Storage\Clients\IClientStorage;
 use Drahak\OAuth2\Storage\Clients\IClient;
 use Drahak\OAuth2\Storage\Clients\Client;
 use Nette\Database\Context;
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * Nette database client storage
  * @package Drahak\OAuth2\Storage\Clients
  * @author Drahomír Hanák
  */
-class ClientStorage extends Object implements IClientStorage
+class ClientStorage implements IClientStorage
 {
 
-	/** @var \DibiConnection */
+	use SmartObject;
+
+	/** @var Connection */
 	private $context;
 
-	public function __construct(\DibiConnection $context)
+	public function __construct(Connection $context)
 	{
 		$this->context = $context;
 	}
@@ -38,7 +41,7 @@ class ClientStorage extends Object implements IClientStorage
 	 * @param string|null $clientSecret
 	 * @return IClient
 	 */
-	public function getClient($clientId, $clientSecret = NULL)
+	public function getClient($clientId, $clientSecret = NULL, $fullData = FALSE)
 	{
 		if (!$clientId) return NULL;
 
@@ -48,6 +51,7 @@ class ClientStorage extends Object implements IClientStorage
 		}
 		$data = $selection->fetch();
 		if (!$data) return NULL;
+		if ($fullData) return $data;
 		return new Client($data['client_id'], $data['secret'], $data['redirect_url']);
 	}
 
@@ -63,7 +67,7 @@ class ClientStorage extends Object implements IClientStorage
 			SELECT g.name
 			FROM oauth_client_grant AS cg
 			RIGHT JOIN oauth_grant AS g ON cg.grant_id = cg.grant_id AND g.name = %s
-			WHERE cg.client_id = %i
+			WHERE cg.client_id = %s
 		', $grantType, $clientId);
 
 		return (bool) $result->fetch();

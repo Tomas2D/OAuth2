@@ -39,4 +39,10 @@ interface IAuthorizationCode
 	 */
 	public function getScope();
 
+	/**
+	 * Get username
+	 * @return string
+	 */
+	public function getUsername();
+
 }

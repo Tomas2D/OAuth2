@@ -5,15 +5,17 @@ use Drahak\OAuth2\IKeyGenerator;
 use Drahak\OAuth2\Storage\ITokenFacade;
 use Drahak\OAuth2\Storage\InvalidAuthorizationCodeException;
 use Drahak\OAuth2\Storage\Clients\IClient;
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * AuthorizationCode
  * @package Drahak\OAuth2\Token
  * @author Drahomír Hanák
  */
-class AuthorizationCodeFacade extends Object implements ITokenFacade
+class AuthorizationCodeFacade implements ITokenFacade
 {
+
+	use SmartObject;
 
 	/** @var int */
 	private $lifetime;
@@ -42,13 +44,14 @@ class AuthorizationCodeFacade extends Object implements ITokenFacade
 	{
 		$accessExpires = new \DateTime;
 		$accessExpires->modify('+' . $this->lifetime . ' seconds');
-
+		
 		$authorizationCode = new AuthorizationCode(
 			$this->keyGenerator->generate(),
 			$accessExpires,
 			$client->getId(),
 			$userId,
-			$scope
+			$scope,
+			NULL
 		);
 		$this->storage->store($authorizationCode);
 

@@ -1,6 +1,7 @@
 <?php
 namespace Drahak\OAuth2\Application;
 
+use Drahak\OAuth2\Grant\AuthorizationCode;
 use Drahak\OAuth2\Grant\GrantContext;
 use Drahak\OAuth2\Grant\IGrant;
 use Drahak\OAuth2\Grant\InvalidGrantTypeException;
@@ -146,7 +147,7 @@ class OAuthPresenter extends Presenter implements IOAuthPresenter
 	 * @param string $redirectUrl
 	 * @param string|null $scope
 	 */
-	public function issueAuthorizationCode($responseType, $redirectUrl, $scope = NULL, $state = NULL)
+	public function issueAuthorizationCode($responseType, $redirectUrl, $scope = NULL)
 	{
 		try {
 			if ($responseType !== 'code') {
@@ -197,6 +198,17 @@ class OAuthPresenter extends Presenter implements IOAuthPresenter
 		} catch (TokenException $e) {
 			$this->oauthError(new InvalidGrantException);
 		}
+	}
+
+	public function verifyToken($access_token = NULL, $scope = NULL, $state = NULL)
+	{
+		$request = $this->getHttpRequest();
+
+		$access_token = $request->getPost('access_token');
+		$grantType = $this->getGrantType();
+
+		$this->sendResponse(new JsonResponse($grantType->verifyToken($access_token)));
+
 	}
 
 }

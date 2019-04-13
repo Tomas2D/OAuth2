@@ -5,7 +5,7 @@ use Drahak\OAuth2\IKeyGenerator;
 use Drahak\OAuth2\Storage\ITokenFacade;
 use Drahak\OAuth2\Storage\InvalidRefreshTokenException;
 use Drahak\OAuth2\Storage\Clients\IClient;
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * RefreshToken
@@ -15,8 +15,10 @@ use Nette\Object;
  * @property-read int $lifetime
  * @property-read IRefreshTokenStorage $storage
  */
-class RefreshTokenFacade extends Object implements ITokenFacade
+class RefreshTokenFacade implements ITokenFacade
 {
+
+	use SmartObject;
 
 	/** @var IRefreshTokenStorage */
 	private $storage;
@@ -49,7 +51,8 @@ class RefreshTokenFacade extends Object implements ITokenFacade
 			$this->keyGenerator->generate(),
 			$expires,
 			$client->getId(),
-			$userId
+			$userId,
+			time()
 		);
 		$this->storage->store($refreshToken);
 

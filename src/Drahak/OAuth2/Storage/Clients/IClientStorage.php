@@ -15,7 +15,7 @@ interface IClientStorage
 	 * @param string $clientSecret
 	 * @return IClient
 	 */
-	public function getClient($clientId, $clientSecret = NULL);
+	public function getClient($clientId, $clientSecret = NULL, $fullData = FALSE);
 
 	/**
 	 * Can client use given grant type

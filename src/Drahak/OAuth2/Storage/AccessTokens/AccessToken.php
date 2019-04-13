@@ -2,7 +2,7 @@
 namespace Drahak\OAuth2\Storage\AccessTokens;
 
 use DateTime;
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * Base AccessToken entity
@@ -14,8 +14,10 @@ use Nette\Object;
  * @property-read string|int $clientId
  * @property-read array $scope
  */
-class AccessToken extends Object implements IAccessToken
+class AccessToken implements IAccessToken
 {
+
+	use SmartObject;
 
 	/** @var string */
 	private $accessToken;
@@ -32,13 +34,22 @@ class AccessToken extends Object implements IAccessToken
 	/** @var array */
 	private $scope;
 
-	public function __construct($accessToken, DateTime $expires, $clientId, $userId, array $scope)
+	/** @var boolean */
+	private $active;
+
+	/** @var string */
+	private $username;
+
+
+	public function __construct($accessToken, DateTime $expires, $clientId, $userId, array $scope, $username = NULL)
 	{
 		$this->accessToken = $accessToken;
 		$this->expires = $expires;
 		$this->clientId = $clientId;
 		$this->userId = $userId;
 		$this->scope = $scope;
+		$this->active = ($expires) > (new DateTime());
+		$this->username = $username;
 	}
 
 	/**
@@ -79,6 +90,22 @@ class AccessToken extends Object implements IAccessToken
 	public function getScope()
 	{
 		return $this->scope;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getIsActive()
+	{
+		return $this->active;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getUsername()
+	{
+		return $this->username;
 	}
 
 }

@@ -50,7 +50,8 @@ class RefreshToken extends GrantType
 			'access_token' => $accessToken->getAccessToken(),
 			'token_type' => 'bearer',
 			'expires_in' => $accessTokenStorage->getLifetime(),
-			'refresh_token' => $refreshToken->getRefreshToken()
+			'refresh_token' => $refreshToken->getRefreshToken(),
+			'active' => TRUE
 		);
 	}
 

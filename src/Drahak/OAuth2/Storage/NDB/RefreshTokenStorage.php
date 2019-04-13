@@ -6,15 +6,17 @@ use Drahak\OAuth2\Storage\RefreshTokens\IRefreshToken;
 use Drahak\OAuth2\Storage\RefreshTokens\RefreshToken;
 use Nette\Database\Context;
 use Nette\Database\SqlLiteral;
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * Nette database RefreshToken storage
  * @package Drahak\OAuth2\Storage\RefreshTokens
  * @author Drahomír Hanák
  */
-class RefreshTokenStorage extends Object implements IRefreshTokenStorage
+class RefreshTokenStorage implements IRefreshTokenStorage
 {
+
+	use SmartObject;
 
 	/** @var Context */
 	private $context;
@@ -76,7 +78,7 @@ class RefreshTokenStorage extends Object implements IRefreshTokenStorage
 			$row['refresh_token'],
 			new \DateTime($row['expires']),
 			$row['client_id'],
-			$row['user_id']
+			$row['user_id'],
 		);
 	}
 

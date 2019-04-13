@@ -1,6 +1,7 @@
 <?php
 namespace Drahak\OAuth2\Storage\Dibi;
 
+use Dibi\Connection;
 use Drahak\OAuth2\InvalidScopeException;
 use Drahak\OAuth2\Storage\AccessTokens\AccessToken;
 use Drahak\OAuth2\Storage\AccessTokens\IAccessTokenStorage;
@@ -8,20 +9,22 @@ use Drahak\OAuth2\Storage\AccessTokens\IAccessToken;
 use Nette\Database\Context;
 use Nette\Database\SqlLiteral;
 use Nette\Database\Table\ActiveRow;
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * AccessTokenStorage
  * @package Drahak\OAuth2\Storage\AccessTokens
  * @author Drahomír Hanák
  */
-class AccessTokenStorage extends Object implements IAccessTokenStorage
+class AccessTokenStorage implements IAccessTokenStorage
 {
 
-	/** @var \DibiConnection */
+	use SmartObject;
+
+	/** @var Connection */
 	private $context;
 
-	public function __construct(\DibiConnection $context)
+	public function __construct(Connection $context)
 	{
 		$this->context = $context;
 	}
@@ -84,7 +87,7 @@ class AccessTokenStorage extends Object implements IAccessTokenStorage
 	 */
 	public function remove($accessToken)
 	{
-		//$this->context->delete($this->getTable())->where('access_token = %s', $accessToken)->execute();
+		$this->context->delete($this->getTable())->where('access_token = %s', $accessToken)->execute();
 	}
 
 	/**
@@ -111,7 +114,8 @@ class AccessTokenStorage extends Object implements IAccessTokenStorage
 			new \DateTime($row['expires_at']),
 			$row['client_id'],
 			$row['user_id'],
-			array_keys($scopes)
+			array_keys($scopes),
+			$this->context->select('username')->from('oauth_user')->where('user_id=%i', $row['user_id'])->fetchSingle()
 		);
 	}
 

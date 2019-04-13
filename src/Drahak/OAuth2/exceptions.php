@@ -124,6 +124,24 @@ class UnsupportedResponseTypeException extends OAuthException
 }
 
 /**
+ * UserDeclinedException
+ * @package Drahak\OAuth2\Application
+ * @author Drahomír Hanák
+ */
+class UserDeclinedException extends OAuthException
+{
+
+	/** @var string */
+	protected $key = 'user_declined';
+
+	public function __construct($message = 'Invalid request parameters', \Exception $previous = NULL)
+	{
+		parent::__construct($message, 401, $previous);
+	}
+
+}
+
+/**
  * ÜnauthorizedClientException
  * @package Drahak\OAuth2\Application
  * @author Drahomír Hanák

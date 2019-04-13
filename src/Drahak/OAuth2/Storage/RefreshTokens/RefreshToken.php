@@ -2,7 +2,7 @@
 namespace Drahak\OAuth2\Storage\RefreshTokens;
 
 use DateTime;
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * RefreshToken
@@ -13,8 +13,10 @@ use Nette\Object;
  * @property-read DateTime $expires
  * @property-read string|int $clientId
  */
-class RefreshToken extends Object implements IRefreshToken
+class RefreshToken implements IRefreshToken
 {
+
+	use SmartObject;
 
 	/** @var string */
 	private $refreshToken;
@@ -28,12 +30,16 @@ class RefreshToken extends Object implements IRefreshToken
 	/** @var string|int */
 	private $userId;
 
+	/** @var boolean */
+	private $active;
+
 	public function __construct($refreshToken, DateTime $expires, $clientId, $userId)
 	{
 		$this->refreshToken = $refreshToken;
 		$this->clientId = $clientId;
 		$this->expires = $expires;
 		$this->userId = $userId;
+		$this->active = ($expires) > (new DateTime());
 	}
 
 	/**
@@ -70,6 +76,14 @@ class RefreshToken extends Object implements IRefreshToken
 	public function getUserId()
 	{
 		return $this->userId;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getIsActive()
+	{
+		return $this->active;
 	}
 
 }

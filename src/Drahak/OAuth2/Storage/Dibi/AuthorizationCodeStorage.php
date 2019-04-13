@@ -1,6 +1,9 @@
 <?php
 namespace Drahak\OAuth2\Storage\Dibi;
 
+use Dibi\Connection;
+use Dibi\DriverException;
+use Dibi\Exception;
 use Drahak\OAuth2\InvalidScopeException;
 use Drahak\OAuth2\Storage\AuthorizationCodes\AuthorizationCode;
 use Drahak\OAuth2\Storage\AuthorizationCodes\IAuthorizationCodeStorage;
@@ -8,20 +11,22 @@ use Drahak\OAuth2\Storage\AuthorizationCodes\IAuthorizationCode;
 use Nette\Database\Context;
 use Nette\Database\SqlLiteral;
 use Nette\Database\Table\ActiveRow;
-use Nette\Object;
+use Nette\SmartObject;
 
 /**
  * AuthorizationCode
  * @package Drahak\OAuth2\Storage\AuthorizationCodes
  * @author Martin Malek
  */
-class AuthorizationCodeStorage extends Object implements IAuthorizationCodeStorage
+class AuthorizationCodeStorage implements IAuthorizationCodeStorage
 {
 
-	/** @var \DibiConnection */
+	use SmartObject;
+
+	/** @var Connection */
 	private $context;
 
-	public function __construct(\DibiConnection $context)
+	public function __construct(Connection $context)
 	{
 		$this->context = $context;
 	}
@@ -68,9 +73,9 @@ class AuthorizationCodeStorage extends Object implements IAuthorizationCodeStora
 					'scope_name' => $scope
 				))->execute();
 			}
-		} catch (\PDOException $e) {
+		} catch (DriverException $e) {
 			// MySQL error 1452 - Cannot add or update a child row: a foreign key constraint fails
-			if (in_array(1452, $e->errorInfo)) {
+			if ($e->getCode() === 1452) {
 				throw new InvalidScopeException;
 			}
 			throw $e;
@@ -107,12 +112,20 @@ class AuthorizationCodeStorage extends Object implements IAuthorizationCodeStora
 			->where('authorization_code = %s', $authorizationCode)
 			->fetchPairs('scope_name');
 
+		$username = NULL;
+
+		try {
+			$username = $this->context->select('username')->from('oauth_user')->where('user_id=%i', $row['user_id'])->fetchSingle();
+		}
+		catch (Exception $exception) {}
+
 		return new AuthorizationCode(
 			$row['authorization_code'],
 			new \DateTime($row['expires_at']),
 			$row['client_id'],
 			$row['user_id'],
-			array_keys($scopes)
+			array_keys($scopes),
+			$username
 		);
 	}
 
