@@ -30,7 +30,10 @@ class RefreshToken extends GrantType
 		$refreshTokenStorage = $this->token->getToken(ITokenFacade::REFRESH_TOKEN);
 		$refreshToken = $this->input->getParameter('refresh_token');
 
-		$refreshTokenStorage->getEntity($refreshToken);
+		$entity = $refreshTokenStorage->getEntity($refreshToken);
+		if ($entity && $entity->getUserId()) {
+			$this->user = new Identity($entity->getUserId());
+		}
 		$refreshTokenStorage->getStorage()->remove($refreshToken);
 	}
 
