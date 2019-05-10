@@ -3,6 +3,7 @@ namespace Drahak\OAuth2\Grant;
 
 use Drahak\OAuth2\Storage\InvalidRefreshTokenException;
 use Drahak\OAuth2\Storage\ITokenFacade;
+use Nette\Security\Identity;
 
 /**
  * RefreshToken
